@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BTBAA</title>
+  <link rel="icon" type="image/png" href="icono.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/wic3fqe.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#121212;--panel:#121212;--text:#f1ebe6;--muted:#a0a099;--line:#393634}
+    html,body{width:100%;min-height:100%}
+    body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--text);padding-bottom:42px}
+
+    /* ─── HERO ─── */
+    .hero{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      border-bottom:0.5px solid var(--line);
+      background:var(--panel);
+      padding-top: 32px;
+      padding-block-end: 16px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .hero-left{
+      padding: 0 0px 0px 0px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:12px;
+      justify-content: flex-start;
+    }
+    .hero-title{
+      font-family:'helvetica-neue-lt-pro', sans-serif;
+      line-height:1.05;
+      letter-spacing:-0.02em;
+      line-height: 1.2;
+    }
+
+    .hero-name-small{
+      display:block;
+      font-size:clamp(18px,2.1vw,32px);
+      font-weight:300;
+      padding-block: 0px;
+    }
+
+    .hero-name-big{
+      display:block;
+      font-size:clamp(38px,3vw,44px);
+      font-weight:600;
+    }
+
+        
+    .hero-title em{font-style:italic;color:var(--muted); font-size: 17px;}
+    .hero-manifesto{
+      font-family:'helvetica-neue-lt-pro', sans-serif;
+      font-size:10px;line-height:1.5;color:#c5c0bc;letter-spacing:0.01em;
+      font-weight: 300;
+    }
+    .hero-photo{
+        overflow:hidden;
+        aspect-ratio:4/3;
+        max-width:240px;        /* ← ajustá el tamaño a gusto */
+        margin:auto;            /* ← centra en su columna */
+        margin-right:0px;
+        border-radius:8px;      /* ← bordes redondeados, subí el número para más redondez */
+        background:#c0392b;
+    }
+    .hero-photo img{width:100%;height:100%;object-fit:cover;display:block}
+
+    /* ─── FILTROS ─── */
+    .filter-bar{
+      position:sticky;top:0;z-index:100;
+      background:var(--panel);
+      border-bottom:0.5px solid var(--line);
+      padding:12px 20px;
+      display:flex;align-items:center;
+    }
+    .filter-btn{
+      display:flex;align-items:center;gap:5px;
+      font-family:'helvetica-neue-lt-pro', sans-serif;
+      font-size:10px;
+      font-weight:200;letter-spacing:-0.01em;
+      color:var(--text);background:transparent;border:none;
+      padding:0;cursor:pointer;transition:color 0.2s;line-height:1;
+      letter-spacing: 0.08em;
+    }
+    .chk{
+      width:10px;height:10px;
+      border:1px solid var(--text);
+      border-radius: 2px;
+      flex-shrink:0;position:relative;
+      transition:background 0.15s,border-color 0.15s;
+    }
+    .chk::after{
+      content:'';position:absolute;
+      left:1.5px;top:-0.5px;
+      width:7px;height:4px;
+      border-left:1.5px solid var(--panel);
+      border-bottom:1.5px solid var(--panel);
+      transform:rotate(-45deg);
+      opacity:0;transition:opacity 0.15s;
+    }
+    .filter-btn.active .chk{background:var(--text)}
+    .filter-btn.active .chk::after{opacity:1}
+    .filter-btn:not(.active){color:#c0bfb8}
+    .filter-btn:not(.active) .chk{border-color:#c0bfb8;background:transparent}
+    .sep{
+      font-family:'helvetica-neue-lt-pro', sans-serif;
+      font-size:clamp(16px,1.8vw,22px);
+      color:var(--line);margin:0 11px;user-select:none;
+    }
+
+    /* ─── MOSAICO ─── */
+    .masonry {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  background: #121212;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+    .tile{
+      break-inside:avoid;background:var(--panel);
+      display:block;text-decoration:none;color:inherit;
+      margin-bottom:6px;
+
+      overflow:hidden;cursor:pointer;transition:background 0.2s;
+    }
+    .tile:hover{background:#252525}
+    .tile.hidden{display:none}
+    .tile-img{width:100%;overflow:hidden}
+    .tile-img img{
+      width:100%;height:auto;display:block;
+      filter:grayscale(10%);
+      transition:transform 0.55s ease,filter 0.35s;
+    }
+    .tile:hover .tile-img img{transform:scale(1.03);filter:grayscale(0%)}
+    .tile-img.ph{
+  display:none;
+}
+    .tile-img.ph-wide{padding-top:60%;background:var(--bg)}
+    .tile-info{
+      padding:8px 12px 12px;
+      border-top:0.5px solid var(--line);
+      display:flex;justify-content:space-between;align-items:baseline;
+      border-block: 1px solid #333333;
+      border-left: 1px solid #333333;
+      border-right: 1px solid #333333;
+    }
+    .tile-title{font-family:'helvetica-neue-lt-pro',sans-serif;font-size:14px;font-weight:300;font-style: normal; line-height:1.2}
+    .tile-right{text-align:right;flex-shrink:0;margin-left:8px}
+    .tile-year{font-size:9px;color:var(--muted)}
+    .tile-cat{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+
+    /* ─── MODAL FULLSCREEN ─── */
+    .modal{
+      position:fixed;inset:0;
+      background:var(--panel);
+      z-index:300;
+      display:flex;flex-direction:column;
+      opacity:0;pointer-events:none;
+      transition:opacity 0.25s ease;
+    }
+    .modal.open{opacity:1;pointer-events:all}
+    .modal-header{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:12px 20px;
+      border-bottom:0.5px solid var(--line);
+      flex-shrink:0;
+    }
+    .modal-info{display:flex;align-items:baseline;gap:16px}
+    .modal-title{
+      font-family:'helvetica-neue-lt-pro',
+      sans-serif;font-size:22px;font-weight:300}
+    .modal-meta{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+    .modal-close{
+      font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;
+      color:var(--muted);background:transparent;border:none;cursor:pointer;
+      transition:color 0.2s;display:flex;align-items:center;gap:6px;
+    }
+    .modal-close:hover{color:var(--text)}
+    .modal-body{
+      flex:1;
+      overflow:auto;
+      background:#0f0f0f;
+      padding:0px;
+    }
+
+    .pdf-shell{
+      width:100%;
+      max-width:1100px;
+      margin:0 auto;
+    }
+
+    .pdf-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.pdf-btn{
+  width:30px;
+  height:30px;
+  border:1px solid #393634;
+  background:#121212;
+  color:#f1ebe6;
+  cursor:pointer;
+  font-size:18px;
+  line-height:1;
+  border-radius:6px;
+}
+
+.pdf-btn:hover{
+  background:#1d1d1d;
+}
+
+.pdf-zoom-label{
+  font-family:'helvetica-neue-lt-pro', sans-serif;
+  font-size:10px;
+  letter-spacing:0.08em;
+  color:#a0a099;
+  min-width:42px;
+  text-align:center;
+}
+
+.pdf-viewer-wrap{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
+
+#pdf-canvas{
+  display:block;
+  max-width:none;
+  height:auto;
+  background:white;
+  box-shadow:0 0 0 1px #2b2b2b;
+}
+
+
+    .modal-ph{
+      width:100%;min-height:calc(100vh - 46px);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    }
+    .modal-ph svg{opacity:0.15}
+    .modal-ph-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--text)}
+    .modal-ph-sub{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted)}
+
+    /* ─── FOOTER FIJO ─── */
+    .footer-fixed{
+      position:fixed;bottom:0;left:0;right:0;
+      background:var(--panel);
+      border-top:0.5px solid var(--line);
+      padding:8px 20px;
+      display:flex;
+      justify-content: space-around;
+      align-items:center;
+      z-index:100;
+      
+    }
+    .footer-links{display:flex;gap:20px;align-items:center}
+    .footer-link{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-size:9px;
+      letter-spacing:0.08em;
+      color:var(--muted);
+      text-decoration:none;
+      transition:color 0.2s;
+      font-family: 'helvetica-neue-lt-pro';
+      align-items: center;
+    }
+    .footer-link:hover{color:var(--text)}
+    .footer-name{font-size:9px;letter-spacing:0.06em;
+      text-transform:uppercase;color:var(--line)}
+
+    /* ─── RESPONSIVE ─── */
+    @media(max-width:640px){
+      .hero{grid-template-columns:1fr 1fr}
+      .hero-photo{
+            margin:20px;                /* ← mismo margen en los 4 lados */
+            max-width:calc(100% - 40px);           /* ← ocupa el ancho menos los márgenes */
+        }
+      .hero-left{padding:20px 20px 0 20px;}
+      .masonry{column-count:2}
+      .footer-name{display:none}
+      .footer-links{gap:12px}
+      .sep{margin:0 8px}
+      .filter-bar{
+            justify-content:center;    /* ← centra los filtros */
+        }
+      
+    }
+    @media(max-width:380px){
+      .hero{grid-template-columns:1fr}
+      .hero-photo{aspect-ratio:16/9}
+      .masonry{column-count:1}
+    }
+
+    .modal-body{
+  flex:1;
+  overflow:auto;
+  background:#0f0f0f;
+  padding:20px;
+}
+
+.pdf-shell{
+  width:100%;
+  max-width:1100px;
+  margin:0 auto;
+}
+
+.pdf-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.pdf-btn{
+  width:30px;
+  height:30px;
+  border:1px solid #393634;
+  background:#121212;
+  color:#f1ebe6;
+  cursor:pointer;
+  font-size:18px;
+  line-height:1;
+  border-radius:6px;
+}
+
+.pdf-btn:hover{
+  background:#1d1d1d;
+}
+
+.pdf-zoom-label{
+  font-family:'helvetica-neue-lt-pro', sans-serif;
+  font-size:10px;
+  letter-spacing:0.08em;
+  color:#a0a099;
+  min-width:42px;
+  text-align:center;
+}
+
+.pdf-viewer-wrap{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  overflow:auto;
+}
+
+#pdf-canvas{
+  display:block;
+  max-width:none;
+  height:auto;
+  background:white;
+  box-shadow:0 0 0 1px #2b2b2b;
+}
+
+.pdf-nav-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+}
+
+.pdf-viewer-wrap {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.pdf-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #393634;
+  background: rgba(18,18,18,0.8);
+  color: #f1ebe6;
+  font-size: 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#pdf-prev, #img-prev { left: 12px; }
+#pdf-next, #img-next { right: 12px; }
+
+.pdf-nav-btn:hover { background: rgba(37,37,37,0.95); }
+.pdf-nav-btn:disabled { opacity: 0.25; cursor: default; }
+
+
+.pdf-page-label {
+  text-align: center;
+  font-family: 'helvetica-neue-lt-pro', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #a0a099;
+  margin-top: 10px;
+}
+
+#pdf-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: white;
+  box-shadow: 0 0 0 1px #2b2b2b;
+}
+
+.img-viewer-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.img-viewer-wrap img {
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+
+.img-viewer-wrap img.horizontal {
+  width: 90vw;
+  max-height: calc(100vh - 120px);
+}
+
+.img-viewer-wrap img.vertical {
+  max-width: 100%;
+  height: calc(100vh - 120px);
+}
+
+#img-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: calc(100vh - 46px);
+  position: relative;
+}
+
+#img-shell .pdf-nav-wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-title">
+        <span class="hero-name-small">Brenda Tamara Belen</span>
+        <span class="hero-name-big">AMAYA ACOSTA</span>
+      </div>
+      <div class="hero-manifesto">
+        Me interesa la ciudad como sistema: la forma en que los espacios construidos,
+        las imágenes y los datos cuentan historias sobre cómo vivimos.
+        Trabajo con atención al detalle y desde la curiosidad —
+        cruzando disciplinas para entender mejor el mundo que habitamos.
+      </div>
+    </div>
+    <div class="hero-photo">
+      <img src="img/brenda.jpg" alt="Brenda Tamara" onerror="this.style.display='none'"/>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="arquitectura"><span class="chk"></span>ARQUITECTURA</button>
+    <span class="sep">/</span>
+    <button class="filter-btn active" data-filter="fotografia"><span class="chk"></span>FOTOGRAFÍA</button>
+    <span class="sep">/</span>
+    <button class="filter-btn active" data-filter="datos"><span class="chk"></span>DATOS</button>
+  </div>
+
+  <!-- MOSAICO -->
+  <!-- Para cada tile: data-pdf="pdf/nombre.pdf" con tu archivo PDF -->
+  <div class="masonry">
+
+    
+    <!-- Arquitectura -->
+
+    <a class="tile" data-cat="arquitectura" 
+      data-title="PH Parque Chacabuco" 
+      data-meta="Refacción · 2025"
+      data-imgs="Arquitectura/PH/01.jpg,Arquitectura/PH/02.jpg,Arquitectura/PH/03.jpg,Arquitectura/PH/04.jpg,Arquitectura/PH/05.jpg,Arquitectura/PH/06.jpg,Arquitectura/PH/07.jpg"
+      href="#">
+      <div class="tile-img"><img src="img/proyecto1.jpg" alt="" onerror="this.style.display='none'"/></div>
+      <div class="tile-info">
+        <div class="tile-title">PH Parque Chacabuco</div>
+        <div class="tile-right">
+          <div class="tile-year">2025</div>
+          <div class="tile-cat">Arq.</div>
+        </div>
+      </div>
+    </a>
+
+    <a class="tile" data-cat="arquitectura" 
+      data-title="Home After Crisis" 
+      data-meta="Concurso YAC · Mención de Honor · 2023"
+      data-imgs="Arquitectura/HomeAfterCrisis/01.jpg,Arquitectura/HomeAfterCrisis/02.jpg"
+      href="#">
+      <div class="tile-img"><img src="img/HomeAfterCrisis.jpg" alt="" onerror="this.style.display='none'"/></div>
+      <div class="tile-info">
+        <div class="tile-title">Home After Crisis</div>
+        <div class="tile-right">
+          <div class="tile-year">2023</div>
+          <div class="tile-cat">Arq.</div>
+        </div>
+      </div>
+    </a>
+
+    <a class="tile" data-cat="arquitectura" 
+      data-title="Invernadero Vertical Urbano" 
+      data-meta="Exploración · 2024"
+      data-imgs="Arquitectura/VerticalGreenhouse/01.jpg"
+      href="#">
+      <div class="tile-img"><img src="img/proyecto3.jpg" alt="" onerror="this.style.display='none'"/></div>
+      <div class="tile-info">
+        <div class="tile-title">Invernadero Vertical Urbano</div>
+        <div class="tile-right">
+          <div class="tile-year">2024</div>
+          <div class="tile-cat">Arq.</div>
+        </div>
+      </div>
+    </a>
+
+    <a class="tile" data-cat="arquitectura" 
+      data-title="Lobos" 
+      data-meta="Exploración · 2024"
+      data-imgs="Arquitectura/Lobos/01.jpg,Arquitectura/Lobos/02.jpg,Arquitectura/Lobos/03.jpg,Arquitectura/Lobos/04.jpg,Arquitectura/Lobos/05.jpg,Arquitectura/Lobos/06.jpg,Arquitectura/Lobos/07.jpg,Arquitectura/Lobos/08.jpg,Arquitectura/Lobos/09.jpg,Arquitectura/Lobos/10.jpg,Arquitectura/Lobos/11.jpg,Arquitectura/Lobos/12.jpg,Arquitectura/Lobos/13.jpg,Arquitectura/Lobos/14.jpg"
+      href="#">
+      <div class="tile-img"><img src="img/Lobos.jpg" alt="" onerror="this.style.display='none'"/></div>
+      <div class="tile-info">
+        <div class="tile-title">Lobos</div>
+        <div class="tile-right">
+          <div class="tile-year">2024</div>
+          <div class="tile-cat">Arq.</div>
+        </div>
+      </div>
+    </a>
+
+
+<a class="tile" data-cat="arquitectura" 
+   data-title="Songdo" 
+   data-meta="Concurso · 2024"
+   data-imgs="Arquitectura/SONGDO/01.jpg,Arquitectura/SONGDO/02.jpg,Arquitectura/SONGDO/03.jpg,Arquitectura/SONGDO/04.jpg,Arquitectura/SONGDO/05.jpg,Arquitectura/SONGDO/06.jpg,Arquitectura/SONGDO/07.jpg,Arquitectura/SONGDO/08.jpg,Arquitectura/SONGDO/09.jpg,Arquitectura/SONGDO/10.jpg"
+   href="#">
+  <div class="tile-img"><img src="img/Songdo.jpg" alt="" onerror="this.style.display='none'"/></div>
+  <div class="tile-info">
+    <div class="tile-title">Songdo</div>
+    <div class="tile-right">
+      <div class="tile-year">2024</div>
+      <div class="tile-cat">Arq.</div>
+    </div>
+  </div>
+</a>
+
+
+    <!-- Fotografía -->
+
+  <a class="tile" data-cat="fotografia" 
+    data-title="Puertos del Lago" 
+    data-meta="Urbana · 2024"
+    data-imgs="Fotografía/Puertos/01.jpg,Fotografía/Puertos/02.jpg,Fotografía/Puertos/03.jpg,Fotografía/Puertos/04.jpg,Fotografía/Puertos/05.jpg,Fotografía/Puertos/06.jpg,Fotografía/Puertos/07.jpg,Fotografía/Puertos/08.jpg"
+    href="#">
+    <div class="tile-img"><img src="img/Puertos.jpg" alt="" onerror="this.style.display='none'"/></div>
+    <div class="tile-info">
+      <div class="tile-title">Puertos del Lago</div>
+      <div class="tile-right">
+        <div class="tile-year">2024</div>
+        <div class="tile-cat">Foto</div>
+      </div>
+    </div>
+  </a>
+
+<a class="tile" data-cat="fotografia" 
+   data-title="Isla Martín García" 
+   data-meta="Urbana · 2024"
+   data-imgs="Fotografía/IslaMartinGarcia/01.jpg,Fotografía/IslaMartinGarcia/02.jpg,Fotografía/IslaMartinGarcia/03.jpg,Fotografía/IslaMartinGarcia/04.jpg,Fotografía/IslaMartinGarcia/05.jpg,Fotografía/IslaMartinGarcia/06.jpg,Fotografía/IslaMartinGarcia/07.jpg,Fotografía/IslaMartinGarcia/08.jpg,Fotografía/IslaMartinGarcia/09.jpg,Fotografía/IslaMartinGarcia/10.jpg,Fotografía/IslaMartinGarcia/11.jpg"
+   href="#">
+  <div class="tile-img"><img src="img/IslaMartinGarcia.jpg" alt="" onerror="this.style.display='none'"/></div>
+  <div class="tile-info">
+    <div class="tile-title">Isla Martín García</div>
+    <div class="tile-right">
+      <div class="tile-year">2024</div>
+      <div class="tile-cat">Foto</div>
+    </div>
+  </div>
+</a>
+
+
+    <!-- Datos -->
+
+<a class="tile" data-cat="datos" 
+   data-title="Mapa Urbano Interactivo" 
+   data-meta="Descripción · 2025"
+   data-imgs="Datos/MapaUrbano/01.jpg"
+   href="#">
+  <div class="tile-img"><img src="img/MapaUrbano.jpg" alt="" onerror="this.style.display='none'"/></div>
+  <div class="tile-info">
+    <div class="tile-title">Mapa Urbano Interactivo</div>
+    <div class="tile-right">
+      <div class="tile-year">2025</div>
+      <div class="tile-cat">Datos</div>
+    </div>
+  </div>
+</a>
+    <a class="tile" data-cat="datos" 
+   data-title="Tablero de Gestión" 
+   data-meta="GIS · 2024"
+   data-imgs="Datos/TableroSemanal/01.jpg"
+   href="#">
+  <div class="tile-img"><img src="img/TableroSemanal.jpg" alt="" onerror="this.style.display='none'"/></div>
+  <div class="tile-info">
+    <div class="tile-title">Tablero de Gestión</div>
+    <div class="tile-right">
+      <div class="tile-year">2024</div>
+      <div class="tile-cat">Datos</div>
+    </div>
+  </div>
+</a>
+
+  </div>
+
+  <!-- MODAL FULLSCREEN -->
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-info">
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-meta" id="modal-meta"></div>
+      </div>
+      <button class="modal-close" id="modal-close">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+          <line x1="1" y1="1" x2="11" y2="11"/><line x1="11" y1="1" x2="1" y2="11"/>
+        </svg>
+        Cerrar
+      </button>
+    </div>
+
+
+<div class="modal-body">
+
+  <!-- PDF -->
+  <div class="pdf-shell" id="pdf-shell" style="display:none;">
+    <div class="pdf-toolbar">
+      <button class="pdf-btn" id="zoom-out">−</button>
+      <span class="pdf-zoom-label" id="pdf-zoom-label">100%</span>
+      <button class="pdf-btn" id="zoom-in">+</button>
+    </div>
+    <div class="pdf-nav-wrap">
+      <button class="pdf-nav-btn" id="pdf-prev">&#8592;</button>
+      <div class="pdf-viewer-wrap">
+        <canvas id="pdf-canvas"></canvas>
+      </div>
+      <button class="pdf-nav-btn" id="pdf-next">&#8594;</button>
+    </div>
+    <div class="pdf-page-label" id="pdf-page-label">1 / 1</div>
+  </div>
+
+  <!-- GALERÍA JPG -->
+<div id="img-shell" style="display:none; width:100%; height:100%; position:relative;">
+    <div class="pdf-nav-wrap">
+      <button class="pdf-nav-btn" id="img-prev">&#8592;</button>
+      <div class="img-viewer-wrap">
+        <img id="img-display" src="" alt="" />
+      </div>
+      <button class="pdf-nav-btn" id="img-next">&#8594;</button>
+    </div>
+    <div class="pdf-page-label" id="img-page-label">1 / 1</div>
+  </div>
+
+  <!-- PLACEHOLDER -->
+  <div class="modal-ph" id="modal-ph">
+    <svg width="52" height="52" viewBox="0 0 40 40" fill="none">
+      <rect x="8" y="4" width="24" height="32" rx="2" stroke="#f1ebe6" stroke-width="1"/>
+      <line x1="13" y1="13" x2="27" y2="13" stroke="#f1ebe6" stroke-width="1"/>
+      <line x1="13" y1="18" x2="27" y2="18" stroke="#f1ebe6" stroke-width="1"/>
+      <line x1="13" y1="23" x2="22" y2="23" stroke="#f1ebe6" stroke-width="1"/>
+    </svg>
+    <div class="modal-ph-title" id="modal-ph-title"></div>
+    <div class="modal-ph-sub" id="modal-ph-sub"></div>
+  </div>
+
+</div>
+
+
+  </div>
+
+  <!-- FOOTER FIJO -->
+  <div class="footer-fixed">
+    <div class="footer-links">
+
+      <a href="mailto:brendatamaraamaya@gmail.com" class="footer-link">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/>
+        </svg>
+        BrendaTamaraAmaya@gmail.com
+      </a>
+
+      <a href="https://www.linkedin.com/in/amaya-brenda-t/" target="_blank" class="footer-link">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/>
+          <circle cx="4" cy="4" r="2"/>
+        </svg>
+        Brenda Tamara Amaya
+      </a>
+
+      <a href="https://wa.me/541134031111" target="_blank" class="footer-link">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.52 3.48A11.8 11.8 0 0012.02 0C5.4 0 .02 5.38.02 12c0 2.12.55 4.19 1.6 6.02L0 24l6.18-1.62A11.94 11.94 0 0012.02 24c6.62 0 12-5.38 12-12 0-3.2-1.25-6.21-3.5-8.52zM12.02 22c-1.8 0-3.56-.48-5.1-1.38l-.37-.22-3.67.96.98-3.58-.24-.37A9.94 9.94 0 012.02 12c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10zm5.48-7.32c-.3-.15-1.77-.87-2.05-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.78-1.67-2.08-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.05 1.02-1.05 2.48s1.07 2.87 1.22 3.07c.15.2 2.1 3.2 5.08 4.48.71.3 1.26.48 1.69.62.71.23 1.35.2 1.86.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z"/>
+        </svg>
+        11-3403-1111
+      </a>
+
+    </div>
+  </div>
+
+<script type="module">
+  import * as pdfjsLib from './build/pdf.mjs';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = './build/pdf.worker.mjs';
+
+  // ─── FILTROS ───
+  const btns = document.querySelectorAll('.filter-btn');
+  const tiles = document.querySelectorAll('.tile');
+  let active = new Set(['arquitectura','fotografia','datos']);
+
+  function updateFilter() {
+    tiles.forEach(t => t.classList.toggle('hidden', !active.has(t.dataset.cat)));
+    btns.forEach(b => b.classList.toggle('active', active.has(b.dataset.filter)));
+  }
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const f = btn.dataset.filter;
+      if (active.has(f)) { if (active.size > 1) active.delete(f); }
+      else { active.add(f); }
+      updateFilter();
+    });
+  });
+
+  // ─── MODAL ───
+  const modal        = document.getElementById('modal');
+  const modalTitle   = document.getElementById('modal-title');
+  const modalMeta    = document.getElementById('modal-meta');
+  const modalPh      = document.getElementById('modal-ph');
+  const modalPhTitle = document.getElementById('modal-ph-title');
+  const modalPhSub   = document.getElementById('modal-ph-sub');
+
+  // PDF
+  const pdfShell     = document.getElementById('pdf-shell');
+  const pdfCanvas    = document.getElementById('pdf-canvas');
+  const pdfZoomLabel = document.getElementById('pdf-zoom-label');
+  const pageLabel    = document.getElementById('pdf-page-label');
+  const zoomInBtn    = document.getElementById('zoom-in');
+  const zoomOutBtn   = document.getElementById('zoom-out');
+  const prevBtn      = document.getElementById('pdf-prev');
+  const nextBtn      = document.getElementById('pdf-next');
+  const ctx          = pdfCanvas.getContext('2d');
+
+  // IMG
+  const imgShell     = document.getElementById('img-shell');
+  const imgDisplay   = document.getElementById('img-display');
+  const imgLabel     = document.getElementById('img-page-label');
+  const imgPrev      = document.getElementById('img-prev');
+  const imgNext      = document.getElementById('img-next');
+
+  let pdfDoc       = null;
+  let currentPage  = 1;
+  let currentScale = 1.0;
+  let rendering    = false;
+
+  let imgList      = [];
+  let imgIndex     = 0;
+
+  // ─── PDF ───
+  async function renderPage(pageNum) {
+    if (!pdfDoc || rendering) return;
+    rendering = true;
+    const page = await pdfDoc.getPage(pageNum);
+    const containerWidth = pdfCanvas.parentElement.clientWidth - 40;
+    const unscaled = page.getViewport({ scale: 1 });
+    const autoScale = containerWidth / unscaled.width;
+    const viewport = page.getViewport({ scale: autoScale * currentScale });
+    pdfCanvas.width  = viewport.width;
+    pdfCanvas.height = viewport.height;
+    ctx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    pageLabel.textContent    = `${pageNum} / ${pdfDoc.numPages}`;
+    pdfZoomLabel.textContent = Math.round(currentScale * 100) + '%';
+    prevBtn.disabled = pageNum <= 1;
+    nextBtn.disabled = pageNum >= pdfDoc.numPages;
+    rendering = false;
+  }
+
+  async function loadPdf(url) {
+    try {
+      pdfDoc = await pdfjsLib.getDocument(url).promise;
+      currentPage = 1;
+      await renderPage(currentPage);
+      pdfShell.style.display = 'block';
+      imgShell.style.display = 'none';
+      modalPh.style.display  = 'none';
+    } catch (error) {
+      pdfShell.style.display = 'none';
+      imgShell.style.display = 'none';
+      modalPh.style.display  = 'flex';
+      modalPhTitle.textContent = 'No se pudo cargar el PDF';
+      modalPhSub.textContent   = url;
+      console.error(error);
+    }
+  }
+
+  prevBtn.addEventListener('click', async () => {
+    if (!pdfDoc || currentPage <= 1) return;
+    currentPage--;
+    await renderPage(currentPage);
+  });
+
+  nextBtn.addEventListener('click', async () => {
+    if (!pdfDoc || currentPage >= pdfDoc.numPages) return;
+    currentPage++;
+    await renderPage(currentPage);
+  });
+
+  zoomInBtn.addEventListener('click', async () => {
+    if (!pdfDoc) return;
+    currentScale = Math.min(currentScale + 0.15, 3);
+    await renderPage(currentPage);
+  });
+
+  zoomOutBtn.addEventListener('click', async () => {
+    if (!pdfDoc) return;
+    currentScale = Math.max(currentScale - 0.15, 0.4);
+    await renderPage(currentPage);
+  });
+
+  // ─── GALERÍA JPG ───
+function showImg(index) {
+  imgDisplay.src = '';
+  imgDisplay.className = '';
+  imgDisplay.onload = () => {
+    if (imgDisplay.naturalWidth >= imgDisplay.naturalHeight) {
+      imgDisplay.classList.add('horizontal');
+    } else {
+      imgDisplay.classList.add('vertical');
+    }
+  };
+  imgDisplay.src = imgList[index];
+  imgLabel.textContent = `${index + 1} / ${imgList.length}`;
+  imgPrev.disabled = index <= 0;
+  imgNext.disabled = index >= imgList.length - 1;
+}
+
+
+  function loadImgs(imgsStr) {
+    imgList  = imgsStr.split(',').map(s => s.trim());
+    imgIndex = 0;
+    showImg(imgIndex);
+    imgShell.style.display = 'block';
+    pdfShell.style.display = 'none';
+    modalPh.style.display  = 'none';
+  }
+
+  imgPrev.addEventListener('click', () => {
+    if (imgIndex <= 0) return;
+    imgIndex--;
+    showImg(imgIndex);
+  });
+
+  imgNext.addEventListener('click', () => {
+    if (imgIndex >= imgList.length - 1) return;
+    imgIndex++;
+    showImg(imgIndex);
+  });
+
+  // ─── ABRIR / CERRAR MODAL ───
+  function openModal(title, meta, pdf, imgs) {
+    modalTitle.textContent   = title;
+    modalMeta.textContent    = meta;
+    modalPhTitle.textContent = title;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    currentScale = 1.0;
+
+    if (imgs) {
+      loadImgs(imgs);
+    } else if (pdf) {
+      loadPdf(pdf);
+    } else {
+      pdfShell.style.display = 'none';
+      imgShell.style.display = 'none';
+      modalPh.style.display  = 'flex';
+    }
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    pdfShell.style.display = 'none';
+    imgShell.style.display = 'none';
+    modalPh.style.display  = 'none';
+    ctx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+    pdfDoc   = null;
+    imgList  = [];
+    imgIndex = 0;
+  }
+
+  tiles.forEach(tile => {
+    tile.addEventListener('click', e => {
+      e.preventDefault();
+      openModal(
+        tile.dataset.title,
+        tile.dataset.meta,
+        tile.dataset.pdf  || null,
+        tile.dataset.imgs || null
+      );
+    });
+  });
+
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+
+  document.addEventListener('keydown', e => {
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape')     closeModal();
+    if (e.key === 'ArrowRight') { if (imgList.length) imgNext.click(); else nextBtn.click(); }
+    if (e.key === 'ArrowLeft')  { if (imgList.length) imgPrev.click(); else prevBtn.click(); }
+  });
+</script>
+</body>
+</html>
